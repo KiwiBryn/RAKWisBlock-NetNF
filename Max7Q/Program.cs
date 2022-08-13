@@ -13,7 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// RAK Wireless Wisblock
+// RAK Core WisBlock
+// https://store.rakwireless.com/products/wiscore-esp32-module-rak11200
+//
+// RAK WisBlock Base
+// https://store.rakwireless.com/products/rak5005-o-base-board
+//
+// RAK WisBlock Sensor
 // https://store.rakwireless.com/products/wisblock-gnss-location-module-rak12500
 //
 // Uses the library
@@ -47,8 +53,6 @@ namespace devMobile.IoT.RAK.Wisblock.Max7Q
             Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
             Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
 
-            Debug.WriteLine("Waiting...");
-
             _gps = new TinyGPSPlus();
 
             // UART1 with default Max7Q baudrate
@@ -63,6 +67,8 @@ namespace devMobile.IoT.RAK.Wisblock.Max7Q
 
             GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
             Gps3V3.Write(PinValue.High);
+
+            Debug.WriteLine("Waiting...");
 
             Thread.Sleep(Timeout.Infinite);
         }
