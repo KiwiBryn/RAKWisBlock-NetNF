@@ -20,13 +20,13 @@
 // https://store.rakwireless.com/products/rak5005-o-base-board
 //
 // RAK WisBlock Sensor
-// https://store.rakwireless.com/products/wisblock-gnss-location-module-rak12500
+// https://store.rakwireless.com/products/rak1910-max-7q-gnss-location-sensor
 //
 // Uses the library
 // https://github.com/mboud/TinyGPSPlusNF
 //
 // Inspired by
-// https://github.com/RAKWireless/WisBlock/tree/master/examples/common/sensors/RAK12500_GPS_ZOE-M8Q/RAK12500_GPS_ZOE-M8Q_UART
+// https://github.com/RAKWireless/WisBlock/tree/master/examples/common/sensors/RAK1910_GPS_UBLOX7
 //
 // Flash device with
 // nanoff --target ESP32_REV0 --serialport COM16 --update
