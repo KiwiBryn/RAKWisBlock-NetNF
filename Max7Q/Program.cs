@@ -28,6 +28,9 @@
 // Inspired by
 // https://github.com/RAKWireless/WisBlock/tree/master/examples/common/sensors/RAK1910_GPS_UBLOX7
 //
+// Pins mapped with
+// https://docs.rakwireless.com/Knowledge-Hub/Pin-Mapper/
+//
 // Flash device with
 // nanoff --target ESP32_REV0 --serialport COM16 --update
 //
@@ -62,7 +65,7 @@ namespace devMobile.IoT.RAK.Wisblock.Max7Q
             serialPort.Open();
             serialPort.WatchChar = '\n';
 
-            // Turn on GPS power GPS_3V3 - 3V3_S - IO2 - GPIO27
+            // Enable the GPS module GPS 3V3_S/RESET_GPS - IO2 - GPIO27
             GpioController gpioController = new GpioController();
 
             GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
