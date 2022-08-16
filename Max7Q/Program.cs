@@ -107,7 +107,12 @@ namespace devMobile.IoT.RAK.Wisblock.Max7Q
 
                 if (_gps.Altitude.IsValid)
                 {
-                    Debug.Write($"Alt:{_gps.Altitude.Meters:F1}M");
+                    Debug.Write($"Alt:{_gps.Altitude.Meters:F1}M ");
+                }
+
+                if (_gps.Location.IsValid)
+                {
+                    Debug.Write($"Hdop:{_gps.Hdop.Value:F2}");
                 }
 
                 if (_gps.Date.IsValid || _gps.Time.IsValid || _gps.Location.IsValid || _gps.Altitude.IsValid)
