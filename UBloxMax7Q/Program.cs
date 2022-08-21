@@ -112,7 +112,7 @@ namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
 
                 if (_gps.Location.IsValid)
                 {
-                    Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}° Lon:{_gps.Location.Longitude.Degrees:F5}° ");
+                    Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}Â° Lon:{_gps.Location.Longitude.Degrees:F5}Â° ");
                 }
 
                 if (_gps.Altitude.IsValid)
