@@ -35,8 +35,9 @@
 // nanoff --target ESP32_REV0 --serialport COM16 --update
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.Max7Q
+namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
 {
+    using System;
     using System.Device.Gpio;
     using System.Diagnostics;
     using System.IO.Ports;
@@ -51,29 +52,38 @@ namespace devMobile.IoT.RAK.Wisblock.Max7Q
 
         public static void Main()
         {
-            Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.Max7Q starting TinyGPS {TinyGPSPlus.LibraryVersion}");
+            Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.UBloxMax7Q starting TinyGPS {TinyGPSPlus.LibraryVersion}");
 
-            Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
-            Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
+            try
+            {
+                Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
+                Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
 
-            _gps = new TinyGPSPlus();
+                _gps = new TinyGPSPlus();
 
-            // UART1 with default Max7Q baudrate
-            SerialPort serialPort = new SerialPort("COM2", 9600);
+                // UART1 with default Max7Q baudrate
+                SerialPort serialPort = new SerialPort("COM2", 9600);
 
-            serialPort.DataReceived += SerialDevice_DataReceived;
-            serialPort.Open();
-            serialPort.WatchChar = '\n';
+                serialPort.DataReceived += SerialDevice_DataReceived;
+                serialPort.Open();
+                serialPort.WatchChar = '\n';
 
-            // Enable the GPS module GPS 3V3_S/RESET_GPS - IO2 - GPIO27
-            GpioController gpioController = new GpioController();
+                // Enable the GPS module GPS 3V3_S/RESET_GPS - IO2 - GPIO27
+                GpioController gpioController = new GpioController();
 
-            GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
-            Gps3V3.Write(PinValue.High);
+                GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
+                Gps3V3.Write(PinValue.High);
 
-            Debug.WriteLine("Waiting...");
+                Debug.WriteLine("Waiting...");
 
-            Thread.Sleep(Timeout.Infinite);
+                Thread.Sleep(Timeout.Infinite);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UBlox MAX7Q initialisation or read failed {ex.Message}");
+
+                Thread.Sleep(Timeout.Infinite);
+            }
         }
 
         private static void SerialDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
