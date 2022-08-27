@@ -16,6 +16,9 @@
 // RAK Core WisBlock
 // https://store.rakwireless.com/products/wiscore-esp32-module-rak11200
 //
+// RAK WisBlock Wireless
+// https://store.rakwireless.com/products/rak2305-wi-fi-extension-board
+//
 // RAK WisBlock Base
 // https://store.rakwireless.com/products/rak5005-o-base-board
 //
@@ -37,99 +40,105 @@
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
 {
-    using System;
-    using System.Device.Gpio;
-    using System.Diagnostics;
-    using System.IO.Ports;
-    using System.Threading;
+   using System;
+   using System.Device.Gpio;
+   using System.Diagnostics;
+   using System.IO.Ports;
+   using System.Threading;
 
-    using nanoFramework.Hardware.Esp32;
-    using TinyGPSPlusNF;
+   using nanoFramework.Hardware.Esp32;
+   using TinyGPSPlusNF;
 
-    public class Program
-    {
-        private static TinyGPSPlus _gps;
+   public class Program
+   {
+      private static TinyGPSPlus _gps;
 
-        public static void Main()
-        {
-            Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.UBloxMax7Q starting TinyGPS {TinyGPSPlus.LibraryVersion}");
+      public static void Main()
+      {
+         Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.UBloxMax7Q starting TinyGPS {TinyGPSPlus.LibraryVersion}");
 
-            try
+         try
+         {
+#if RAK11200
+            Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
+            Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
+#endif
+#if RAK2350
+            Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_RX);
+            Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_TX);
+#endif
+
+            _gps = new TinyGPSPlus();
+
+            // UART1 with default Max7Q baudrate
+            SerialPort serialPort = new SerialPort("COM2", 9600);
+
+            serialPort.DataReceived += SerialDevice_DataReceived;
+            serialPort.Open();
+            serialPort.WatchChar = '\n';
+
+            // Enable the GPS module GPS 3V3_S/RESET_GPS - IO2 - GPIO27
+            GpioController gpioController = new GpioController();
+
+            GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
+            Gps3V3.Write(PinValue.High);
+
+            Debug.WriteLine("Waiting...");
+
+            Thread.Sleep(Timeout.Infinite);
+         }
+         catch (Exception ex)
+         {
+            Debug.WriteLine($"UBlox MAX7Q initialisation or read failed {ex.Message}");
+
+            Thread.Sleep(Timeout.Infinite);
+         }
+      }
+
+      private static void SerialDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
+      {
+         // we only care if got EoL character
+         if (e.EventType != SerialData.WatchChar)
+         {
+            return;
+         }
+
+         SerialPort serialDevice = (SerialPort)sender;
+
+         string sentence = serialDevice.ReadExisting();
+
+         if (_gps.Encode(sentence))
+         {
+            if (_gps.Date.IsValid)
             {
-                Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
-                Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
-
-                _gps = new TinyGPSPlus();
-
-                // UART1 with default Max7Q baudrate
-                SerialPort serialPort = new SerialPort("COM2", 9600);
-
-                serialPort.DataReceived += SerialDevice_DataReceived;
-                serialPort.Open();
-                serialPort.WatchChar = '\n';
-
-                // Enable the GPS module GPS 3V3_S/RESET_GPS - IO2 - GPIO27
-                GpioController gpioController = new GpioController();
-
-                GpioPin Gps3V3 = gpioController.OpenPin(Gpio.IO27, PinMode.Output);
-                Gps3V3.Write(PinValue.High);
-
-                Debug.WriteLine("Waiting...");
-
-                Thread.Sleep(Timeout.Infinite);
+               Debug.Write($"{_gps.Date.Year}-{_gps.Date.Month:D2}-{_gps.Date.Day:D2} ");
             }
-            catch (Exception ex)
+
+            if (_gps.Time.IsValid)
             {
-                Debug.WriteLine($"UBlox MAX7Q initialisation or read failed {ex.Message}");
-
-                Thread.Sleep(Timeout.Infinite);
+               Debug.Write($"{_gps.Time.Hour:D2}:{_gps.Time.Minute:D2}:{_gps.Time.Second:D2}.{_gps.Time.Centisecond:D2} ");
             }
-        }
 
-        private static void SerialDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            // we only care if got EoL character
-            if (e.EventType != SerialData.WatchChar)
+            if (_gps.Location.IsValid)
             {
-                return;
+               Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}° Lon:{_gps.Location.Longitude.Degrees:F5}° ");
             }
 
-            SerialPort serialDevice = (SerialPort)sender;
-
-            string sentence = serialDevice.ReadExisting();
-
-            if (_gps.Encode(sentence))
+            if (_gps.Altitude.IsValid)
             {
-                if (_gps.Date.IsValid)
-                {
-                    Debug.Write($"{_gps.Date.Year}-{_gps.Date.Month:D2}-{_gps.Date.Day:D2} ");
-                }
-
-                if (_gps.Time.IsValid)
-                {
-                    Debug.Write($"{_gps.Time.Hour:D2}:{_gps.Time.Minute:D2}:{_gps.Time.Second:D2}.{_gps.Time.Centisecond:D2} ");
-                }
-
-                if (_gps.Location.IsValid)
-                {
-                    Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}° Lon:{_gps.Location.Longitude.Degrees:F5}° ");
-                }
-
-                if (_gps.Altitude.IsValid)
-                {
-                    Debug.Write($"Alt:{_gps.Altitude.Meters:F1}M ");
-                }
-
-                if (_gps.Location.IsValid)
-                {
-                    Debug.Write($"Hdop:{_gps.Hdop.Value:F2}");
-                }
-
-                if (_gps.Date.IsValid || _gps.Time.IsValid || _gps.Location.IsValid || _gps.Altitude.IsValid)
-                {
-                    Debug.WriteLine("");
-                }
+               Debug.Write($"Alt:{_gps.Altitude.Meters:F1}M ");
             }
-        }
-    }
+
+            if (_gps.Location.IsValid)
+            {
+               Debug.Write($"Hdop:{_gps.Hdop.Value:F2}");
+            }
+
+            if (_gps.Date.IsValid || _gps.Time.IsValid || _gps.Location.IsValid || _gps.Altitude.IsValid)
+            {
+               Debug.WriteLine("");
+            }
+         }
+      }
+   }
 }
