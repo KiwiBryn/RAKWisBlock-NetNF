@@ -20,47 +20,48 @@
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.Sht3C
 {
-    using System;
-    using System.Diagnostics;
-    using System.Device.I2c;
-    using System.Threading;
+   using System;
+   using System.Diagnostics;
+   using System.Device.I2c;
+   using System.Threading;
 
-    using Iot.Device.Shtc3;
-    using nanoFramework.Hardware.Esp32;
+   using Iot.Device.Shtc3;
+   using nanoFramework.Hardware.Esp32;
 
-    public class Program
-    {
-        public static void Main()
-        {
-            Debug.WriteLine("devMobile.IoT.RAK.Wisblock.SHTC3 starting");
+   public class Program
+   {
+      public static void Main()
+      {
+         Debug.WriteLine("devMobile.IoT.RAK.Wisblock.SHTC3 starting");
 
-            try
+         try
+         {
+            // RAK11200 & RAK2305
+            Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
+            Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+
+            I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
+
+            using (I2cDevice device = I2cDevice.Create(settings))
+            using (Shtc3 shtc3 = new(device))
             {
-                Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
-                Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+               while (true)
+               {
+                  if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                  {
+                     Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
+                  }
 
-                I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
-
-                using (I2cDevice device = I2cDevice.Create(settings))
-                using (Shtc3 shtc3 = new(device))
-                {
-                    while (true)
-                    {
-                        if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
-                        {
-                            Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
-                        }
-
-                        Thread.Sleep(10000);
-                    }
-                }
+                  Thread.Sleep(10000);
+               }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"SHTC3 initialisation or read failed {ex.Message}");
+         }
+         catch (Exception ex)
+         {
+            Debug.WriteLine($"SHTC3 initialisation or read failed {ex.Message}");
 
-                Thread.Sleep(Timeout.Infinite);
-            }
-        }
-    }
+            Thread.Sleep(Timeout.Infinite);
+         }
+      }
+   }
 }
