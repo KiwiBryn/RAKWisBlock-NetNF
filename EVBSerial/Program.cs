@@ -14,7 +14,7 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN
 
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN BreakoutSerial starting");
+         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN RAK3172/RAK4630 EVB starting");
 
          try
          {
