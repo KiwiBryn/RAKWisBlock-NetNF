@@ -89,7 +89,7 @@ namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
          }
          catch (Exception ex)
          {
-            Debug.WriteLine($"UBlox MAX7Q initialisation or read failed {ex.Message}");
+            Debug.WriteLine($"UBlox MAX7Q initialisation failed {ex.Message}");
 
             Thread.Sleep(Timeout.Infinite);
          }
