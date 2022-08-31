@@ -13,13 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN
+// RAK2305 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM4
+//
+namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
 { 
    using System;
    using System.Diagnostics;
    using System.IO.Ports;
    using System.Threading;
-   using global::nanoFramework.Hardware.Esp32; //need NuGet nanoFramework.Hardware.Esp32
+   using global::nanoFramework.Hardware.Esp32;
 
    public class Program
    {
@@ -33,7 +35,7 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN
 
          try
          {
-            // set GPIO functions for COM2 (this is UART1 on ESP32)
+            // set GPIO functions for COM2 (this is UART1 on RAK2305)
             Configuration.SetPinFunction(Gpio.IO21, DeviceFunction.COM2_TX);
             Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.COM2_RX);
 
@@ -79,6 +81,7 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN
                   //atCommand = "ATR";
                   //atCommand = "AT+SLEEP=4000";
                   //atCommand = "AT+ATM";
+                  //atCommand = "AT?"; // Needed an AT Command with a really long response.
                   Debug.WriteLine("");
                   Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} {i} TX:{atCommand} bytes:{atCommand.Length}--------------------------------");
                   _SerialPort.WriteLine(atCommand);
