@@ -20,7 +20,7 @@
 // https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-High-Accuracy-Mini.html
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.SHT31
+namespace devMobile.IoT.RAK.Wisblock.RAK11200.SHT31
 {
     using System;
     using System.Device.I2c;

@@ -22,10 +22,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Iot.Device.Sht3x, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Iot.Device.Sht3x.1.2.40\lib\Iot.Device.Sht3x.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="Iot.Device.Sht3x">
+      <HintPath>..\packages\nanoFramework.Iot.Device.Sht3x.1.2.47\lib\Iot.Device.Sht3x.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib, Version=1.12.0.4, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.12.0\lib\mscorlib.dll</HintPath>
@@ -57,15 +55,11 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="UnitsNet.RelativeHumidity, Version=4.143.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\UnitsNet.nanoFramework.RelativeHumidity.4.143.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="UnitsNet.RelativeHumidity">
+      <HintPath>..\packages\UnitsNet.nanoFramework.RelativeHumidity.4.144.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
     </Reference>
-    <Reference Include="UnitsNet.Temperature, Version=4.143.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\UnitsNet.nanoFramework.Temperature.4.143.0\lib\UnitsNet.Temperature.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="UnitsNet.Temperature">
+      <HintPath>..\packages\UnitsNet.nanoFramework.Temperature.4.144.0\lib\UnitsNet.Temperature.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
