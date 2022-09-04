@@ -25,8 +25,9 @@ namespace devMobile.IoT.RAK.Wisblock.Sht3C
    using System.Device.I2c;
    using System.Threading;
 
-   using Iot.Device.Shtc3;
    using nanoFramework.Hardware.Esp32;
+
+   using Iot.Device.Shtc3;
 
    public class Program
    {
