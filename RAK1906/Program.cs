@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------
-// Copyright (c) August 2022, devMobile Software
+// Copyright (c) September 2022, devMobile Software
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@
 // https://store.rakwireless.com/products/rak19007-wisblock-base-board-2nd-gen
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Bmxx80
+//
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.RAK11200.BME680
+namespace devMobile.IoT.RAK.Wisblock.RAK1906
 {
    using System;
    using System.Device.I2c;
@@ -52,7 +53,7 @@ namespace devMobile.IoT.RAK.Wisblock.RAK11200.BME680
 
             using (I2cDevice device = I2cDevice.Create(i2cSettings))
             {
-               using (Bme680 bme680 = new Bme680(i2cDevice)) 
+               using (Bme680 bme680 = new Bme680(i2cDevice))
                {
                   bme680.Reset();
 
@@ -62,19 +63,16 @@ namespace devMobile.IoT.RAK.Wisblock.RAK11200.BME680
                      var readResult = bme680.Read();
 
                      // Print out the measured data
-                     Debug.WriteLine($"Gas resistance: {readResult.GasResistance.Ohms}Ohm");
-                     Debug.WriteLine($"Temperature: {readResult.Temperature.DegreesCelsius}\u00B0C");
-                     Debug.WriteLine($"Pressure: {readResult.Pressure.Hectopascals}hPa");
-                     Debug.WriteLine($"Relative humidity: {readResult.Humidity.Percent}%");
+                     Debug.WriteLine($"Temperature {readResult.Temperature.DegreesCelsius:F1}°C  Humidity {readResult.Humidity.Value:F0}%  Pressure: {readResult.Pressure.Hectopascals:F1}hPa  GasResistance: {readResult.GasResistance.Value:F1} ");
 
                      Thread.Sleep(10000);
                   }
-               } 
+               }
             }
          }
          catch (Exception ex)
          {
-            Debug.WriteLine($"SHT31 initialisation or read failed {ex.Message}");
+            Debug.WriteLine($"BME680 initialisation or read failed {ex.Message}");
 
             Thread.Sleep(Timeout.Infinite);
          }

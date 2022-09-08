@@ -8,12 +8,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{11A8DD76-328B-46DF-9F39-F559912D0360};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>de0e20dc-51e9-4406-8337-32957f9a70ea</ProjectGuid>
+    <ProjectGuid>aa796365-96aa-405a-9136-ccee9505e5e7</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>RAK11200RAK1906</RootNamespace>
-    <AssemblyName>RAK11200RAK1906</AssemblyName>
+    <RootNamespace>RAK1906</RootNamespace>
+    <AssemblyName>RAK1906</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
