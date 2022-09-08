@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------
-// Copyright (c) August 2022, devMobile Software
+// Copyright (c) September 2022, devMobile Software
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK2305
+//
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200
+//
 // https://store.rakwireless.com/products/rak1901-shtc3-temperature-humidity-sensor
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Shtc3
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.Sht3C
+namespace devMobile.IoT.RAK.Wisblock.RAK1901
 {
    using System;
    using System.Diagnostics;
@@ -33,7 +37,7 @@ namespace devMobile.IoT.RAK.Wisblock.Sht3C
    {
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.RAK.Wisblock.SHTC3 starting");
+         Debug.WriteLine("devMobile.IoT.RAK.Wisblock.RAK11200RAK1901 starting");
 
          try
          {
