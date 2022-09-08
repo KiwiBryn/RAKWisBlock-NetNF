@@ -40,6 +40,8 @@ namespace devMobile.IoT.RAK.Wisblock.RAK1906
       {
          Debug.WriteLine("devMobile.IoT.RAK.Wisblock.BME680 starting");
 
+         Thread.Sleep(5000);
+
          try
          {
             Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
