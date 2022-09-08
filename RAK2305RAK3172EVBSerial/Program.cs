@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// RAK2305 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM4
 //
 namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
 { 
@@ -27,11 +26,13 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
    {
       private static SerialPort _SerialPort;
 
-      private const string SerialPortId = "COM2";
+      private const string SerialPortId = "COM3";
 
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN RAK3172/RAK4630 EVB starting");
+         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN RAK3172 EVB starting");
+
+         Thread.Sleep(5000);
 
          try
          {
@@ -66,7 +67,7 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
                _SerialPort.WatchChar = '\n';
 
                _SerialPort.ReadExisting(); // Running at 115K2 this was necessary
-
+           
 
                for (int i = 0; i < 5; i++)
                {
