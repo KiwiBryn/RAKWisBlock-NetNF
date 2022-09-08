@@ -14,16 +14,18 @@
 // limitations under the License.
 //
 // RAK Core WisBlock
-// https://store.rakwireless.com/products/wiscore-esp32-module-rak11200
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200
 //
 // RAK WisBlock Wireless
-// https://store.rakwireless.com/products/rak2305-wi-fi-extension-board
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK2305/Overview/
 //
-// RAK WisBlock Base
-// https://store.rakwireless.com/products/rak5005-o-base-board
+// RAK WisBlock Bases
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK5005-O
+
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK19001
 //
 // RAK WisBlock Sensor
-// https://store.rakwireless.com/products/rak1910-max-7q-gnss-location-sensor
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK1910
 //
 // Uses the library
 // https://github.com/mboud/TinyGPSPlusNF
@@ -38,7 +40,7 @@
 // nanoff --target ESP32_REV0 --serialport COM16 --update
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
+namespace devMobile.IoT.RAK.Wisblock.RAK1910
 {
    using System;
    using System.Device.Gpio;
@@ -47,6 +49,7 @@ namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
    using System.Threading;
 
    using nanoFramework.Hardware.Esp32;
+
    using TinyGPSPlusNF;
 
    public class Program
@@ -55,7 +58,7 @@ namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
 
       public static void Main()
       {
-         Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.UBloxMax7Q starting TinyGPS {TinyGPSPlus.LibraryVersion}");
+         Debug.WriteLine($"devMobile.IoT.RAK.Wisblock.RAK1910 starting TinyGPS {TinyGPSPlus.LibraryVersion}");
 
          try
          {
@@ -121,7 +124,7 @@ namespace devMobile.IoT.RAK.Wisblock.UBloxMax7Q
 
             if (_gps.Location.IsValid)
             {
-               Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}Â° Lon:{_gps.Location.Longitude.Degrees:F5}Â° ");
+               Debug.Write($"Lat:{_gps.Location.Latitude.Degrees:F5}° Lon:{_gps.Location.Longitude.Degrees:F5}° ");
             }
 
             if (_gps.Altitude.IsValid)
