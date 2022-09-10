@@ -19,7 +19,6 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -33,7 +32,7 @@
       <HintPath>..\packages\nanoFramework.Runtime.Events.1.10.0\lib\nanoFramework.Runtime.Events.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Gpio">
-      <HintPath>..\packages\nanoFramework.System.Device.Gpio.1.0.4\lib\System.Device.Gpio.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Device.Gpio.1.1.5\lib\System.Device.Gpio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
