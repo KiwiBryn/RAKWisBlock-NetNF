@@ -27,46 +27,85 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
     using System;
     using System.Device.I2c;
     using System.Diagnostics;
+    using System.Net.Http;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
 
     using Iot.Device.Shtc3;
 
     using nanoFramework.Hardware.Esp32;
+    using nanoFramework.Json;
+    using nanoFramework.Networking;
 
     public class Program
     {
+        private static HttpClient _httpClient;
+
         public static void Main()
         {
             Debug.WriteLine("devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901 starting");
 
-            try
+            Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
+            Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+
+            if (!WifiNetworkHelper.ConnectDhcp(Config.Ssid, Config.Password, requiresDateTime: true))
             {
-                // RAK11200 & RAK2305
-                Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
-                Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
-
-                I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
-
-                using (I2cDevice device = I2cDevice.Create(settings))
-                using (Shtc3 shtc3 = new(device))
+                if (NetworkHelper.HelperException != null)
                 {
-                   while (true)
-                   {
-                      if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
-                      {
-                         Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
-                      }
-
-                      Thread.Sleep(10000);
-                   }
+                    Debug.WriteLine($"WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"SHTC3 initialisation or read failed {ex.Message}");
 
                 Thread.Sleep(Timeout.Infinite);
             }
+
+            _httpClient = new HttpClient
+            {
+                SslProtocols = System.Net.Security.SslProtocols.Tls12,
+                HttpsAuthentCert = new X509Certificate(Config.DigiCertBaltimoreCyberTrustRoot),
+                BaseAddress = new Uri($"https://{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}/messages/events?api-version=2020-03-13"),
+            };
+            _httpClient.DefaultRequestHeaders.Add("Authorization", Config.SasKey);
+
+            I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
+            I2cDevice device = I2cDevice.Create(settings);
+            Shtc3 shtc3 = new(device);
+
+            while (true)
+            {
+                if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                {
+                    Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
+
+                    TelemetryPayload telemetryPayload = new()
+                    {
+                        Temperature = temperature.DegreesCelsius.ToString("F1"),
+                        RelativeHumidity = relativeHumidity.Value.ToString("F0"),
+                    };
+
+                    string output = JsonConvert.SerializeObject(telemetryPayload);
+
+                    StringContent content = new StringContent(output);
+
+                    try
+                    {
+                        var response = _httpClient.Post("", content);
+
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch(Exception ex)
+                    {
+                        Debug.WriteLine($"Azure IoT Hub POST failed:{ex.Message}");
+                    }
+                }
+
+                Thread.Sleep(30 * 60 * 1000);
+            }
         }
+    }
+
+    internal class TelemetryPayload
+    {
+        public string Temperature { get; set; }
+        public string RelativeHumidity { get; set; }
     }
 }
