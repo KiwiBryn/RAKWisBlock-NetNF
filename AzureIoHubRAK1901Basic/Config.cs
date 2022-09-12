@@ -17,10 +17,11 @@
 namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
 {
     public class Config
-    {
+    {     
         public const string DeviceID = "...";
-        public const string AzureIoTHubHostName = "...";
         public const string SasKey = "...";
+
+        public const string AzureIoTHubHostName = "...";
         public const string Ssid = "...";
         public const string Password = "...";
 
