@@ -21,6 +21,13 @@
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Shtc3
 //
+// Inspired by
+// https://github.com/nanoframework/Samples/tree/main/samples/HTTP/HttpAzurePOST
+//
+// http://blog.devmobile.co.nz/2019/11/24/azure-iot-hub-sas-tokens-revisited-again/
+// http://blog.devmobile.co.nz/2019/11/24/azure-iot-hub-sas-keys-revisited/
+// http://blog.devmobile.co.nz/2014/08/30/gps-tracker-azure-service-bus/
+//
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
 {
@@ -34,11 +41,12 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
     using Iot.Device.Shtc3;
 
     using nanoFramework.Hardware.Esp32;
-    using nanoFramework.Json;
     using nanoFramework.Networking;
 
     public class Program
     {
+        private static TimeSpan SensorUpdatePeriod = new TimeSpan(0, 30, 0);
+
         private static HttpClient _httpClient;
 
         public static void Main()
@@ -76,23 +84,17 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
                 {
                     Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
 
-                    TelemetryPayload telemetryPayload = new()
-                    {
-                        Temperature = temperature.DegreesCelsius.ToString("F1"),
-                        RelativeHumidity = relativeHumidity.Value.ToString("F0"),
-                    };
-
-                    string output = JsonConvert.SerializeObject(telemetryPayload);
-
-                    StringContent content = new StringContent(output);
+                    string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}}}";
 
                     try
                     {
-                        var response = _httpClient.Post("", content);
+                        using (HttpContent content = new StringContent(payload))
+                        using (HttpResponseMessage response = _httpClient.Post("", content))
+                        {
+                            Console.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
 
-                        Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} HTTP Error code:{response.StatusCode} Reason:{response.ReasonPhrase}");
-
-                        response.EnsureSuccessStatusCode();
+                            response.EnsureSuccessStatusCode();
+                        }
                     }
                     catch(Exception ex)
                     {
@@ -100,14 +102,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
                     }
                 }
 
-                Thread.Sleep(30 * 60 * 1000);
+                Thread.Sleep(SensorUpdatePeriod);
             }
         }
-    }
-
-    internal class TelemetryPayload
-    {
-        public string Temperature { get; set; }
-        public string RelativeHumidity { get; set; }
     }
 }
