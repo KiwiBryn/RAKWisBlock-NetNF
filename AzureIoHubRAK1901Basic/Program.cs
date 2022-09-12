@@ -90,6 +90,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
                     {
                         var response = _httpClient.Post("", content);
 
+                        Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} HTTP Error code:{response.StatusCode} Reason:{response.ReasonPhrase}");
+
                         response.EnsureSuccessStatusCode();
                     }
                     catch(Exception ex)
