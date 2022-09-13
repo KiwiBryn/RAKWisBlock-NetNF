@@ -29,7 +29,7 @@
 // http://blog.devmobile.co.nz/2014/08/30/gps-tracker-azure-service-bus/
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
+namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic
 {
     using System;
     using System.Device.I2c;
@@ -51,7 +51,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901
 
         public static void Main()
         {
-            Debug.WriteLine("devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901 starting");
+            Debug.WriteLine("devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic starting");
 
             Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
             Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
