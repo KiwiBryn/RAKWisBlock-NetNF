@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //
-namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK3631RAK2305Serial
+namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK4631RAK2305Serial
 {
    using System;
    using System.Diagnostics;
