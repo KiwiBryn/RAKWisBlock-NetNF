@@ -65,7 +65,7 @@ namespace Blinky
          //GpioPin led = s_GpioController.OpenPin(PinNumber('H', 14), PinMode.Output);
 
          // RAK11200 on RAK5005
-         //GpioPin led = s_GpioController.OpenPin(Gpio.IO12, PinMode.Output); // LED1 Green
+         GpioPin led = s_GpioController.OpenPin(Gpio.IO12, PinMode.Output); // LED1 Green
          //GpioPin led = s_GpioController.OpenPin(Gpio.IO02, PinMode.Output); // LED2 Blue
 
          // RAK11200 on RAK19001 needs battery connected or power switch in rechargeable position.
