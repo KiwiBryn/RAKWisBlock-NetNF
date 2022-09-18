@@ -66,15 +66,9 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK4631RAK2305Serial
 
                _SerialPort.ReadExisting(); // Running at 115K2 this was necessary
 
-               string atCommand;
-               atCommand = "AT+ATM";
-               Debug.WriteLine("");
-               Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} TX:{atCommand} bytes:{atCommand.Length}--------------------------------");
-               _SerialPort.WriteLine(atCommand);
-
                for (int i = 0; i < 5; i++)
                {
-                  //string atCommand;
+                  string atCommand;
                   atCommand = "AT+VER=?";
                   //atCommand = "AT+SN=?"; // Empty response?
                   //atCommand = "AT+HWMODEL=?";
