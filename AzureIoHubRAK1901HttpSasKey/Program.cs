@@ -54,7 +54,9 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey starting");
+         DateTime sasTokenValidUntil = DateTime.UtcNow;
+
+         Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey starting");
 
          Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
          Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
@@ -63,38 +65,57 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
          {
             if (NetworkHelper.HelperException != null)
             {
-               Debug.WriteLine($"WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
+               Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
             }
 
             Thread.Sleep(Timeout.Infinite);
          }
 
+         string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
+
          _httpClient = new HttpClient
          {
             SslProtocols = System.Net.Security.SslProtocols.Tls12,
             HttpsAuthentCert = new X509Certificate(Config.DigiCertBaltimoreCyberTrustRoot),
-            BaseAddress = new Uri($"https://{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}/messages/events?api-version=2020-03-13"),
+            BaseAddress = new Uri($"https://{uri}/messages/events?api-version=2020-03-13"),
          };
-
-         string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
-
-         _httpClient.DefaultRequestHeaders.Add("Authorization", GenerateSasToken(uri, Config.Key, Config.SasKeyValidFor));
 
          I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
          I2cDevice device = I2cDevice.Create(settings);
          Shtc3 shtc3 = new(device);
 
+         string sasToken = "";
+
          while (true)
          {
-            if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
+
+            if (sasTokenValidUntil <= DateTime.UtcNow)
             {
-               Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
+               sasTokenValidUntil = DateTime.UtcNow.Add(Config.SasTokenRenewalInterval);
 
-               string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}}}";
+               sasToken = SasTokenGenerate(uri, Config.Key, Config.SasTokenRenewalInterval);
 
-               try
+               Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewalPeriod} valid until {sasTokenValidUntil:HH:mm:ss dd-MM-yy}");
+            }
+
+            if (!shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+            {
+               Debug.WriteLine($" Temperature and Humidity read failed");
+
+               continue;
+            }
+
+            Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}%");
+
+            string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}}}";
+
+            try
+            {
+               using (HttpContent content = new StringContent(payload))
                {
-                  using (HttpContent content = new StringContent(payload))
+                  content.Headers.Add("Authorization", sasToken);
+
                   using (HttpResponseMessage response = _httpClient.Post("", content))
                   {
                      Console.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
@@ -102,17 +123,19 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
                      response.EnsureSuccessStatusCode();
                   }
                }
-               catch (Exception ex)
-               {
-                  Debug.WriteLine($"Azure IoT Hub POST failed:{ex.Message}");
-               }
             }
+            catch (Exception ex)
+            {
+               Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub POST failed:{ex.Message} {ex?.InnerException?.Message}");
+            }
+
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub telemetry update done");
 
             Thread.Sleep(Config.TelemetryUploadInterval);
          }
       }
 
-      public static string GenerateSasToken(string resourceUri, string key, TimeSpan sasKeyvalidFor)
+      public static string SasTokenGenerate(string resourceUri, string key, TimeSpan sasKeyvalidFor)
       {
          long sasKeyExpires = DateTime.UtcNow.Add(sasKeyvalidFor).ToUnixTimeSeconds();
 

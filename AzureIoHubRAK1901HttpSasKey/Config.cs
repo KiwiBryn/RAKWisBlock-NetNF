@@ -18,19 +18,20 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 {
    using System;
 
-    public class Config
-    {
-        public const string DeviceID = "...";
-        public const string AzureIoTHubHostName = "...";
-        public const string Key = "...";
-        public readonly static TimeSpan SasKeyValidFor = new TimeSpan(24, 0, 0);
-        public readonly static TimeSpan TelemetryUploadInterval = new TimeSpan(0, 10, 0);
+   public class Config
+   {
+      public const string DeviceID = "...";
+      public const string AzureIoTHubHostName = "...";
+      public const string Key = "...";
+      public readonly static TimeSpan SasTokenRenewalPeriod = new TimeSpan(24, 0, 0);
+      public readonly static TimeSpan SasTokenRenewalInterval = new TimeSpan(0, 30, 0);
+      public readonly static TimeSpan TelemetryUploadInterval = new TimeSpan(0, 10, 0);
 
-        public const string Ssid = "...";
-        public const string Password = "...";
+      public const string Ssid = "...";
+      public const string Password = "...";
 
-        // DigiCert Trusted Root Authority from https://www.digicert.com/kb/digicert-root-certificates.htm#otherroots
-        public const string DigiCertBaltimoreCyberTrustRoot =
+      // DigiCert Trusted Root Authority from https://www.digicert.com/kb/digicert-root-certificates.htm#otherroots
+      public const string DigiCertBaltimoreCyberTrustRoot =
 @"-----BEGIN CERTIFICATE-----
 MIIDdzCCAl+gAwIBAgIEAgAAuTANBgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJJ
 RTESMBAGA1UEChMJQmFsdGltb3JlMRMwEQYDVQQLEwpDeWJlclRydXN0MSIwIAYD
@@ -52,5 +53,5 @@ Epn3o0WC4zxe9Z2etciefC7IpJ5OCBRLbf1wbWsaY71k5h+3zvDyny67G7fyUIhz
 ksLi4xaNmjICq44Y3ekQEe5+NauQrz4wlHrQMz2nZQ/1/I6eYs9HRCwBXbsdtTLS
 R9I4LtD+gdwyah617jzV/OeBHRnDJELqYzmp
 -----END CERTIFICATE-----";
-    }
+   }
 }
