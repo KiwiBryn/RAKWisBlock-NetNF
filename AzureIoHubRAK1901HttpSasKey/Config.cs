@@ -23,8 +23,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
       public const string DeviceID = "...";
       public const string AzureIoTHubHostName = "...";
       public const string Key = "...";
-      public readonly static TimeSpan SasTokenRenewalPeriod = new TimeSpan(24, 0, 0);
-      public readonly static TimeSpan SasTokenRenewalInterval = new TimeSpan(0, 30, 0);
+      public readonly static TimeSpan SasTokenRenewFor = new TimeSpan(24, 0, 0);
+      public readonly static TimeSpan SasTokenRenewEvery = new TimeSpan(0, 30, 0);
       public readonly static TimeSpan TelemetryUploadInterval = new TimeSpan(0, 10, 0);
 
       public const string Ssid = "...";

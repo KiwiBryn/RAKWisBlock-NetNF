@@ -48,15 +48,15 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
    using nanoFramework.Hardware.Esp32;
    using nanoFramework.Networking;
 
-   public class Program
-   {
+      public class Program
+      {
       private const int I2cDeviceBusID = 1;
 
       private static HttpClient _httpClient;
 
       public static void Main()
       {
-         DateTime sasTokenValidUntil = DateTime.UtcNow;
+         DateTime sasTokenValidUntilUtc = DateTime.UtcNow;
 
          Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey starting");
 
@@ -91,15 +91,17 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
          while (true)
          {
+            DateTime standardisedUtcNow = DateTime.UtcNow;
+
             Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
 
-            if (sasTokenValidUntil <= DateTime.UtcNow)
+            if (sasTokenValidUntilUtc <= standardisedUtcNow)
             {
-               sasTokenValidUntil = DateTime.UtcNow.Add(Config.SasTokenRenewEvery);
+               sasTokenValidUntilUtc = standardisedUtcNow.Add(Config.SasTokenRenewEvery);
 
-               sasToken = SasTokenGenerate(uri, Config.Key, Config.SasTokenRenewFor);
+               sasToken = SasTokenGenerate(uri, Config.Key, sasTokenValidUntilUtc);
 
-               Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewFor} valid until {sasTokenValidUntil:HH:mm:ss dd-MM-yy}");
+               Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewFor} valid until {sasTokenValidUntilUtc:HH:mm:ss dd-MM-yy}");
             }
 
             if (!shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
@@ -138,17 +140,17 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
          }
       }
 
-      public static string SasTokenGenerate(string resourceUri, string key, TimeSpan sasKeyvalidFor)
+      public static string SasTokenGenerate(string resourceUri, string key, DateTime sasKeyTokenUntilUtc)
       {
-         long sasKeyExpires = DateTime.UtcNow.Add(sasKeyvalidFor).ToUnixTimeSeconds();
+         long sasKeyvalidUntilUtcUnix = sasKeyTokenUntilUtc.ToUnixTimeSeconds();
 
-         string stringToSign = $"{HttpUtility.UrlEncode(resourceUri)}\n{sasKeyExpires}";
+         string stringToSign = $"{HttpUtility.UrlEncode(resourceUri)}\n{sasKeyvalidUntilUtcUnix}";
 
          var hmac = SHA.computeHMAC_SHA256(Convert.FromBase64String(key), Encoding.UTF8.GetBytes(stringToSign));
 
          string signature = Convert.ToBase64String(hmac);
 
-         return $"SharedAccessSignature sr={HttpUtility.UrlEncode(resourceUri)}&sig={HttpUtility.UrlEncode(signature)}&se={sasKeyExpires}";
+         return $"SharedAccessSignature sr={HttpUtility.UrlEncode(resourceUri)}&sig={HttpUtility.UrlEncode(signature)}&se={sasKeyvalidUntilUtcUnix}";
       }
    }
 }
