@@ -50,6 +50,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
    public class Program
    {
+      private const int I2cDeviceBusID = 1;
+
       private static HttpClient _httpClient;
 
       public static void Main()
@@ -73,6 +75,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
          string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
 
+         // not setting Authorization here as it will change as SAS Token refreshed
          _httpClient = new HttpClient
          {
             SslProtocols = System.Net.Security.SslProtocols.Tls12,
@@ -80,7 +83,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
             BaseAddress = new Uri($"https://{uri}/messages/events?api-version=2020-03-13"),
          };
 
-         I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
+         I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
          I2cDevice device = I2cDevice.Create(settings);
          Shtc3 shtc3 = new(device);
 
@@ -92,11 +95,11 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
             if (sasTokenValidUntil <= DateTime.UtcNow)
             {
-               sasTokenValidUntil = DateTime.UtcNow.Add(Config.SasTokenRenewalInterval);
+               sasTokenValidUntil = DateTime.UtcNow.Add(Config.SasTokenRenewEvery);
 
-               sasToken = SasTokenGenerate(uri, Config.Key, Config.SasTokenRenewalInterval);
+               sasToken = SasTokenGenerate(uri, Config.Key, Config.SasTokenRenewFor);
 
-               Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewalPeriod} valid until {sasTokenValidUntil:HH:mm:ss dd-MM-yy}");
+               Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewFor} valid until {sasTokenValidUntil:HH:mm:ss dd-MM-yy}");
             }
 
             if (!shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
@@ -145,7 +148,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasKey
 
          string signature = Convert.ToBase64String(hmac);
 
-         return String.Format( "SharedAccessSignature sr={0}&sig={1}&se={2}", HttpUtility.UrlEncode(resourceUri), HttpUtility.UrlEncode(signature), sasKeyExpires);
+         return $"SharedAccessSignature sr={HttpUtility.UrlEncode(resourceUri)}&sig={HttpUtility.UrlEncode(signature)}&se={sasKeyExpires}";
       }
    }
 }
