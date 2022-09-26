@@ -24,10 +24,6 @@
 // Inspired by
 // https://github.com/nanoframework/Samples/tree/main/samples/HTTP/HttpAzurePOST
 //
-// http://blog.devmobile.co.nz/2019/11/24/azure-iot-hub-sas-tokens-revisited-again/
-// http://blog.devmobile.co.nz/2019/11/24/azure-iot-hub-sas-keys-revisited/
-// http://blog.devmobile.co.nz/2014/08/30/gps-tracker-azure-service-bus/
-//
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic
 {
@@ -72,7 +68,10 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic
                 HttpsAuthentCert = new X509Certificate(Config.DigiCertBaltimoreCyberTrustRoot),
                 BaseAddress = new Uri($"https://{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}/messages/events?api-version=2020-03-13"),
             };
-            _httpClient.DefaultRequestHeaders.Add("Authorization", Config.SasKey);
+
+            string sasKey = $"SharedAccessSignature sr={Config.AzureIoTHubHostName}.azure-devices.net%2Fdevices%2F{Config.DeviceID}&sig={Config.SasSignature}&se={Config.SasExpiryTime}";
+
+            _httpClient.DefaultRequestHeaders.Add("Authorization", sasKey);
 
             I2cConnectionSettings settings = new(1, Shtc3.DefaultI2cAddress);
             I2cDevice device = I2cDevice.Create(settings);
