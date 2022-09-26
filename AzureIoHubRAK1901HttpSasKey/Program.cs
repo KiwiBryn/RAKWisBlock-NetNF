@@ -13,6 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// ***************************************************************************
+// BEWARE - Storing the Primary/Secondary key on a device could end badly. The
+//          use more secure approaches (X509 certicates etc.) is recommended.
+//****************************************************************************
+//
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK2305
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200
