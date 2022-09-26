@@ -15,9 +15,9 @@
 //
 // https://store.rakwireless.com/products/rak1920-sensor-adapter-module
 //
-// https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Si7021
+// https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Sht3x
 //
-// https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-High-Accuracy-Mini.html
+// https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-SHT31.html
 //
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.RAK1920.SHT31
