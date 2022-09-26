@@ -43,8 +43,6 @@ namespace devMobile.IoT.RAK.Wisblock.RAK11200BatteryVoltage
          GpioPin ledBlue = s_GpioController.OpenPin(Gpio.IO02, PinMode.Output); // LED2 Blue
 
          s_AdcController = new AdcController();
-         int max1 = s_AdcController.MaxValue;
-         int min1 = s_AdcController.MinValue;
 
          Debug.WriteLine($"min:{s_AdcController.MinValue} max:{s_AdcController.MaxValue}");
 
