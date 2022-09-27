@@ -19,15 +19,13 @@
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK19001/
 //
-namespace devMobile.IoT.RAK.Wisblock.RAK11200BatteryVoltage
+namespace devMobile.IoT.RAK.Wisblock.RAK11200BatteryCharge
 {
-   using System;
    using System.Device.Gpio;
    using System.Threading;
    using System.Device.Adc;
    using nanoFramework.Hardware.Esp32;
    using System.Diagnostics;
-   using System.Globalization;
 
    public class Program
    {
