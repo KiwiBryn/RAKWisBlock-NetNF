@@ -111,11 +111,11 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
                continue;
             }
 
-            double batteryVoltage = batteryVoltageAdcChannel.ReadRatio() * 100.0;
+            double batteryCharge = batteryVoltageAdcChannel.ReadRatio() * 100.0;
 
-            Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVoltage {batteryVoltage:F1}%");
+            Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}%");
 
-            string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryVoltage\":{batteryVoltage:F1}}}";
+            string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryCharge\":{batteryCharge:F1}}}";
 
             try
             {
