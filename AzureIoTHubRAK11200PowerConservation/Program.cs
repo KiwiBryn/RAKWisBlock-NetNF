@@ -50,7 +50,6 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
       private const int AdcControllerChannel = 0;
 
       private static HttpClient _httpClient;
-      private static AdcController _adcController;
 
       public static void Main()
       {
@@ -85,8 +84,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
          I2cDevice device = I2cDevice.Create(settings);
          Shtc3 shtc3 = new(device);
 
-         _adcController = new AdcController();
-         AdcChannel batteryVoltageAdcChannel = _adcController.OpenChannel(AdcControllerChannel);
+         AdcController adcController = new AdcController();
+         AdcChannel batteryVoltageAdcChannel = adcController.OpenChannel(AdcControllerChannel);
 
          string sasToken = "";
 
