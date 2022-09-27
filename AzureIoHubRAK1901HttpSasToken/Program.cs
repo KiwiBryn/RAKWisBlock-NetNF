@@ -14,8 +14,7 @@
 // limitations under the License.
 //
 // ***************************************************************************
-// BEWARE - Storing the Primary/Secondary key on a device could end badly. The
-//          use more secure approaches (X509 certificates etc.)is recommended.
+// BEWARE - The use of more secure approaches (X509 certificates etc.)is recommended.
 //****************************************************************************
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK2305
