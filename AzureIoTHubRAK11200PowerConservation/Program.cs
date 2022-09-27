@@ -42,12 +42,15 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
 
    using nanoFramework.Hardware.Esp32;
    using nanoFramework.Networking;
+   using System.Device.Adc;
 
    public class Program
    {
       private const int I2cDeviceBusID = 1;
+      private const int AdcControllerChannel = 0;
 
       private static HttpClient _httpClient;
+      private static AdcController _adcController;
 
       public static void Main()
       {
@@ -82,6 +85,9 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
          I2cDevice device = I2cDevice.Create(settings);
          Shtc3 shtc3 = new(device);
 
+         _adcController = new AdcController();
+         AdcChannel batteryVoltageAdcChannel = _adcController.OpenChannel(AdcControllerChannel);
+
          string sasToken = "";
 
          while (true)
@@ -106,9 +112,11 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
                continue;
             }
 
-            Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}%");
+            double batteryVoltage = batteryVoltageAdcChannel.ReadRatio() * 100.0;
 
-            string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}}}";
+            Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVoltage {batteryVoltage:F1}%");
+
+            string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryVoltage\":{batteryVoltage:F1}}}";
 
             try
             {
