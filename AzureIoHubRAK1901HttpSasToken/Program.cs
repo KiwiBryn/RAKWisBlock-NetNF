@@ -25,7 +25,7 @@
 // https://github.com/nanoframework/Samples/tree/main/samples/HTTP/HttpAzurePOST
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic
+namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasToken
 {
     using System;
     using System.Device.I2c;
