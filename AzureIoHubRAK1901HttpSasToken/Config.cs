@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.Basic
+namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasToken
 {
     public class Config
     {
