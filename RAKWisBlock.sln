@@ -25,7 +25,7 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "AzureIoHubRAK1901HttpSasKey
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "RAK11200BatteryCharge", "RAK11200BatteryCharge\RAK11200BatteryCharge.nfproj", "{C9EB6D89-11B8-4664-9FE5-9E1980D03C5A}"
 EndProject
-Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "AzureIoTHubRAK11200PowerConservation", "AzureIoTHubRAK11200PowerConservation\AzureIoTHubRAK11200PowerConservation.nfproj", "{BD33B036-2759-4B02-8B4A-02DFACA2D00C}"
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "AzureIoTHubRAK11200PowerBaseline", "AzureIoTHubRAK11200PowerBaseline\AzureIoTHubRAK11200PowerBaseline.nfproj", "{BD33B036-2759-4B02-8B4A-02DFACA2D00C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
