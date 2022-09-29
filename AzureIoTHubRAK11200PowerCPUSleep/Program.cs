@@ -57,7 +57,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
 
         public static void Main()
         {
-            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep starting");
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep starting");
 
             Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
             Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
