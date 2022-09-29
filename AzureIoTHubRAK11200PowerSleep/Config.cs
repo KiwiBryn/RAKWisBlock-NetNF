@@ -23,8 +23,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
       public const string DeviceID = "...";
       public const string AzureIoTHubHostName = "...";
       public const string Key = "...";
-      public readonly static TimeSpan SasTokenRenewFor = new TimeSpan(24, 0, 0);
-      public readonly static TimeSpan SasTokenRenewEvery = new TimeSpan(0, 30, 0);
+      public readonly static TimeSpan FailureRetryInterval = new TimeSpan(0, 5, 0);
+      public readonly static TimeSpan SasTokenRenewFor = new TimeSpan(0, 20, 0);
       public readonly static TimeSpan TelemetryUploadInterval = new TimeSpan(0, 10, 0);
 
       public const string Ssid = "...";
