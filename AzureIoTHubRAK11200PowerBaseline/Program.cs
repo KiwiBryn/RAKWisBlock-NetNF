@@ -25,7 +25,7 @@
 // https://github.com/KiwiBryn/RAKWisBlock-NetNF/tree/master/AzureIoHubRAK1901HttpSasKey
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
+namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerBaseline
 {
     using System;
     using System.Device.I2c;
@@ -53,7 +53,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation
         {
             DateTime sasTokenValidUntilUtc = DateTime.UtcNow;
 
-            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation starting");
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerBaseline starting");
 
             Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
             Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
