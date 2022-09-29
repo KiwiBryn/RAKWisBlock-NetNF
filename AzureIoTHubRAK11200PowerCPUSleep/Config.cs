@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
+namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
 {
    using System;
 

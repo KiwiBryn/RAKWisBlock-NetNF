@@ -32,7 +32,7 @@
 //---------------------------------------------------------------------------------
 #define SLEEP_LIGHT
 //#define SLEEP_DEEP
-namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
+namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
 {
     using System;
     using System.Device.Adc;
