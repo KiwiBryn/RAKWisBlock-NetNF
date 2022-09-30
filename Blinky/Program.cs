@@ -64,7 +64,7 @@ namespace Blinky
          // Silabs SLSTK3701A: LED1 PH14 is LLED1
          //GpioPin led = s_GpioController.OpenPin(PinNumber('H', 14), PinMode.Output);
 
-         // RAK11200 on RAK5005
+         // RAK11200 on RAK5005/RAK19007
          GpioPin led = s_GpioController.OpenPin(Gpio.IO12, PinMode.Output); // LED1 Green
          //GpioPin led = s_GpioController.OpenPin(Gpio.IO02, PinMode.Output); // LED2 Blue
 
