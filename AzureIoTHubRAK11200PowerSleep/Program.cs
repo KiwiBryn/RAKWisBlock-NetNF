@@ -17,7 +17,7 @@
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK19007
 //
-// https://store.rakwireless.com/products/rak1901-shtc3-temperature-humidity-sensor
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK1901
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Shtc3
 //
@@ -29,10 +29,13 @@
 //      OR
 //  SLEEP_DEEP
 //
+//  SLEEP_SHT3C
+//
 //---------------------------------------------------------------------------------
-#define SLEEP_LIGHT
+//#define SLEEP_LIGHT
 //#define SLEEP_DEEP
-namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
+#define SLEEP_SHT3C
+namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 {
     using System;
     using System.Device.Adc;
@@ -49,6 +52,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
 
     using nanoFramework.Hardware.Esp32;
     using nanoFramework.Networking;
+    using System.Threading;
 
     public class Program
     {
@@ -59,11 +63,15 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
         {
             Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep starting");
 
-            Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
-            Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+            Thread.Sleep(5000);
 
             try
             {
+                Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
+                Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connecting");
+
                 if (!WifiNetworkHelper.ConnectDhcp(Config.Ssid, Config.Password, requiresDateTime: true))
                 {
                     if (NetworkHelper.HelperException != null)
@@ -75,6 +83,32 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
                     Sleep.StartLightSleep();
                 }
 
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connected");
+
+                // Configure the SHTC3 
+                I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
+                I2cDevice device = I2cDevice.Create(settings);
+                Shtc3 shtc3 = new(device);
+
+                // Assuming that if TryGetTemperatureAndHumidity fails accessing temperature or relativeHumidity will cause an exception
+                shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity);
+
+#if SLEEP_SHT3C
+                shtc3.Sleep();
+#endif
+
+                // Configure Analog input (AIN0) port then read the "battery charge"
+                AdcController adcController = new AdcController();
+                AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
+
+                double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
+
+                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
+
+                // Assemble the JSON payload, should use nanoFramework.Json
+                string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryCharge\":{batteryCharge:F1}}}";
+
+                // Configure the HttpClient uri, certificate, and authorization
                 string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
 
                 HttpClient httpClient = new HttpClient()
@@ -85,38 +119,13 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep
                 };
                 httpClient.DefaultRequestHeaders.Add("Authorization", SasTokenGenerate(uri, Config.Key, DateTime.UtcNow.Add(Config.SasTokenRenewFor)));
 
-                I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
-                I2cDevice device = I2cDevice.Create(settings);
-                Shtc3 shtc3 = new(device);
-
-                AdcController adcController = new AdcController();
-                AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
-
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
 
-                // Might not need this if just let it reference go pop then dealt with by try catch
-                if (!shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                HttpResponseMessage response = httpClient.Post("", new StringContent(payload));
                 {
-                    Debug.WriteLine($" Temperature and Humidity read failed");
+                    Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update done, Response code:{response.StatusCode}");
 
-                    Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
-                    Sleep.StartLightSleep();
-                }
-
-                double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
-
-                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
-
-                string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryCharge\":{batteryCharge:F1}}}";
-
-                using (HttpContent content = new StringContent(payload))
-                {
-                    using (HttpResponseMessage response = httpClient.Post("", content))
-                    {
-                        Console.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
-
-                        response.EnsureSuccessStatusCode();
-                    }
+                    response.EnsureSuccessStatusCode();
                 }
             }
             catch (Exception ex)
