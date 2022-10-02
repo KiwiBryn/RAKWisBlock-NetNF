@@ -24,6 +24,8 @@
 // Builds on 
 // https://github.com/KiwiBryn/RAKWisBlock-NetNF/tree/master/AzureIoTHubRAK11200PowerBaseline
 //
+// nanoff --platform esp32 --serialport COM29 --update
+//
 //  To configure how the device sleeps one of the following should be defined.
 //  SLEEP_LIGHT
 //      OR
@@ -33,8 +35,8 @@
 //
 //---------------------------------------------------------------------------------
 //#define SLEEP_LIGHT
-//#define SLEEP_DEEP
-#define SLEEP_SHT3C
+#define SLEEP_DEEP
+//#define SLEEP_SHT3C
 namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 {
     using System;
@@ -44,6 +46,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using System.Threading;
     using System.Web;
 
     using Iot.Device.Shtc3;
@@ -52,7 +55,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
     using nanoFramework.Hardware.Esp32;
     using nanoFramework.Networking;
-    using System.Threading;
+
 
     public class Program
     {
@@ -61,7 +64,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
         public static void Main()
         {
-            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerCpuSleep starting");
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep starting");
 
             Thread.Sleep(5000);
 
@@ -122,11 +125,10 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
 
                 HttpResponseMessage response = httpClient.Post("", new StringContent(payload));
-                {
-                    Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update done, Response code:{response.StatusCode}");
 
-                    response.EnsureSuccessStatusCode();
-                }
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
+
+                response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
             {
@@ -141,7 +143,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
             Sleep.StartLightSleep();
 #endif
 #if SLEEP_DEEP
-           Sleep.StartDeepSleep();
+            Sleep.StartDeepSleep();
 #endif
         }
 
