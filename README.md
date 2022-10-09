@@ -18,4 +18,6 @@ Series of projects for exploring running the .NET nanoFramework on RAK WisBlock 
 * [RAK11200 – Azure IoT Hub HTTP SAS Tokens](http://blog.devmobile.co.nz/2022/09/13/net-nanoframework-rak11200-azure-iot-hub-sas-tokens/)
 * [RAK11200 – Azure IoT Hub HTTP SAS Tokens-Revisited](http://blog.devmobile.co.nz/2022/09/24/net-nanoframework-rak11200-azure-iot-hub-http-sas-tokens-revisited/)
 * [RAK11200 - Azure IoT Hub HTTP SAS Keys](http://blog.devmobile.co.nz/2022/09/23/net-nanoframework-rak11200-azure-iot-hub-http-sas-keys/)
+* [RAK11200 - Azure IoT Hub HTTP battery charge monitoring](http://blog.devmobile.co.nz/2022/09/30/net-nanoframework-rak11200-azure-iot-hub-http-battery-charge-monitoring/)
+* [RAK11200 - Azure IoT Hub HTTP Power conservation](http://blog.devmobile.co.nz/2022/10/04/net-nanoframework-rak11200-azure-iot-hub-http-power-conservation/)
 
