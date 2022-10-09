@@ -132,7 +132,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub telemetry update failed:{ex.Message} {ex?.InnerException?.Message}");
 
                 Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
-                Sleep.StartLightSleep();
+                Sleep.StartDeepSleep();
             }
 
             Sleep.EnableWakeupByTimer(Config.TelemetryUploadInterval);
