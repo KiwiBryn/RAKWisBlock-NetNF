@@ -65,8 +65,9 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                     Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
                 }
 
-                Thread.Sleep(Timeout.Infinite);
-            }
+                    Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
+                    Sleep.StartDeepSleep();
+                }
 
             string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
 
@@ -136,7 +137,8 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub telemetry update done");
 
-                Thread.Sleep(Config.TelemetryUploadInterval);
+                Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
+                Sleep.StartDeepSleep();
             }
         }
 
