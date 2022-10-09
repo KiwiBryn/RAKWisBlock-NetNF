@@ -17,7 +17,7 @@
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK19007
 //
-// https://store.rakwireless.com/products/rak1901-shtc3-temperature-humidity-sensor
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK1901
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Shtc3
 //

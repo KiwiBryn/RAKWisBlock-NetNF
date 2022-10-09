@@ -17,17 +17,30 @@
 //
 // https://docs.rakwireless.com/Product-Categories/WisBlock/RAK19007
 //
-// https://store.rakwireless.com/products/rak1901-shtc3-temperature-humidity-sensor
+// https://docs.rakwireless.com/Product-Categories/WisBlock/RAK1901
 //
 // https://github.com/nanoframework/nanoFramework.IoT.Device/tree/develop/devices/Shtc3
 //
 // Builds on 
 // https://github.com/KiwiBryn/RAKWisBlock-NetNF/tree/master/AzureIoTHubRAK11200PowerBaseline
 //
+// nanoff --platform esp32 --serialport COM29 --update
+//
+//  To configure how the device sleeps one of the following should be defined.
+//  SLEEP_LIGHT
+//      OR
+//  SLEEP_DEEP
+//
+//  SLEEP_SHT3C
+//
 //---------------------------------------------------------------------------------
+//#define SLEEP_LIGHT
+#define SLEEP_DEEP
+//#define SLEEP_SHT3C
 namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 {
     using System;
+    using System.Device.Adc;
     using System.Device.I2c;
     using System.Diagnostics;
     using System.Net.Http;
@@ -42,7 +55,6 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
     using nanoFramework.Hardware.Esp32;
     using nanoFramework.Networking;
-    using System.Device.Adc;
 
     public class Program
     {
@@ -51,95 +63,85 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
         public static void Main()
         {
-            DateTime sasTokenValidUntilUtc = DateTime.UtcNow;
+            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep starting");
 
-            Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerConservation starting");
+            Thread.Sleep(5000);
 
-            Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
-            Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
-
-            if (!WifiNetworkHelper.ConnectDhcp(Config.Ssid, Config.Password, requiresDateTime: true))
+            try
             {
-                if (NetworkHelper.HelperException != null)
+                Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
+                Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connecting");
+
+                if (!WifiNetworkHelper.ConnectDhcp(Config.Ssid, Config.Password, requiresDateTime: true))
                 {
-                    Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
-                }
+                    if (NetworkHelper.HelperException != null)
+                    {
+                        Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} WifiNetworkHelper.ConnectDhcp failed {NetworkHelper.HelperException}");
+                    }
 
                     Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
                     Sleep.StartDeepSleep();
                 }
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connected");
 
-            string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
+                // Configure the SHTC3 
+                I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
+                I2cDevice device = I2cDevice.Create(settings);
+                Shtc3 shtc3 = new(device);
 
-            // not setting Authorization here as it will change as SAS Token refreshed
-            HttpClient httpClient = new HttpClient
-            {
-                SslProtocols = System.Net.Security.SslProtocols.Tls12,
-                HttpsAuthentCert = new X509Certificate(Config.DigiCertBaltimoreCyberTrustRoot),
-                BaseAddress = new Uri($"https://{uri}/messages/events?api-version=2020-03-13"),
-            };
+                // Assuming that if TryGetTemperatureAndHumidity fails accessing temperature or relativeHumidity will cause an exception
+                shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity);
 
-            I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
-            I2cDevice device = I2cDevice.Create(settings);
-            Shtc3 shtc3 = new(device);
+#if SLEEP_SHT3C
+                shtc3.Sleep();
+#endif
 
-            AdcController adcController = new AdcController();
-            AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
-
-            string sasToken = "";
-
-            while (true)
-            {
-                DateTime standardisedUtcNow = DateTime.UtcNow;
-
-                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
-
-                if (sasTokenValidUntilUtc <= standardisedUtcNow)
-                {
-                    sasTokenValidUntilUtc = standardisedUtcNow.Add(Config.SasTokenRenewEvery);
-
-                    sasToken = SasTokenGenerate(uri, Config.Key, sasTokenValidUntilUtc);
-
-                    Debug.WriteLine($" Renewing SAS token for {Config.SasTokenRenewFor} valid until {sasTokenValidUntilUtc:HH:mm:ss dd-MM-yy}");
-                }
-
-                if (!shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
-                {
-                    Debug.WriteLine($" Temperature and Humidity read failed");
-
-                    continue;
-                }
+                // Configure Analog input (AIN0) port then read the "battery charge"
+                AdcController adcController = new AdcController();
+                AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
 
                 double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
 
-                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}%");
+                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}ï¿½C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
 
+                // Assemble the JSON payload, should use nanoFramework.Json
                 string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryCharge\":{batteryCharge:F1}}}";
 
-                try
+                // Configure the HttpClient uri, certificate, and authorization
+                string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
+
+                HttpClient httpClient = new HttpClient()
                 {
-                    using (HttpContent content = new StringContent(payload))
-                    {
-                        content.Headers.Add("Authorization", sasToken);
+                    SslProtocols = System.Net.Security.SslProtocols.Tls12,
+                    HttpsAuthentCert = new X509Certificate(Config.DigiCertBaltimoreCyberTrustRoot),
+                    BaseAddress = new Uri($"https://{uri}/messages/events?api-version=2020-03-13"),
+                };
+                httpClient.DefaultRequestHeaders.Add("Authorization", SasTokenGenerate(uri, Config.Key, DateTime.UtcNow.Add(Config.SasTokenRenewFor)));
 
-                        using (HttpResponseMessage response = httpClient.Post("", content))
-                        {
-                            Console.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub device {Config.DeviceID} telemetry update start");
 
-                            response.EnsureSuccessStatusCode();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub POST failed:{ex.Message} {ex?.InnerException?.Message}");
-                }
+                HttpResponseMessage response = httpClient.Post("", new StringContent(payload));
 
-                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub telemetry update done");
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Azure IoT Hub telemetry update failed:{ex.Message} {ex?.InnerException?.Message}");
 
                 Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
-                Sleep.StartDeepSleep();
+                Sleep.StartLightSleep();
             }
+
+            Sleep.EnableWakeupByTimer(Config.TelemetryUploadInterval);
+#if SLEEP_LIGHT
+            Sleep.StartLightSleep();
+#endif
+#if SLEEP_DEEP
+            Sleep.StartDeepSleep();
+#endif
         }
 
         public static string SasTokenGenerate(string resourceUri, string key, DateTime sasKeyTokenUntilUtc)
