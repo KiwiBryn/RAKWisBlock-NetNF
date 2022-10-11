@@ -24,6 +24,10 @@
 // Builds on 
 // https://github.com/KiwiBryn/RAKWisBlock-NetNF/tree/master/AzureIoHubRAK1901HttpSasKey
 //
+// Need to check this if upload fails Q1 2023
+//
+// https://techcommunity.microsoft.com/t5/internet-of-things-blog/azure-iot-tls-critical-changes-are-almost-here-and-why-you/ba-p/2393169
+//
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerBaseline
 {

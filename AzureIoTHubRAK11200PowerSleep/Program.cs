@@ -33,6 +33,10 @@
 //
 //  SLEEP_SHT3C
 //
+// Need to check this if upload fails Q1 2023
+//
+// https://techcommunity.microsoft.com/t5/internet-of-things-blog/azure-iot-tls-critical-changes-are-almost-here-and-why-you/ba-p/2393169
+//
 //---------------------------------------------------------------------------------
 //#define SLEEP_LIGHT
 #define SLEEP_DEEP
