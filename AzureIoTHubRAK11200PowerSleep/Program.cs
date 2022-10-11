@@ -90,28 +90,35 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                 }
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connected");
 
-                // Configure the SHTC3 
-                I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
-                I2cDevice device = I2cDevice.Create(settings);
-                Shtc3 shtc3 = new(device);
-
-                // Assuming that if TryGetTemperatureAndHumidity fails accessing temperature or relativeHumidity will cause an exception
-                shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity);
-
-#if SLEEP_SHT3C
-                shtc3.Sleep();
-#endif
-
                 // Configure Analog input (AIN0) port then read the "battery charge"
                 AdcController adcController = new AdcController();
                 AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
 
                 double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
 
-                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}�C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
+                // Configure the SHTC3 
+                I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
+                I2cDevice device = I2cDevice.Create(settings);
+                Shtc3 shtc3 = new(device);
 
-                // Assemble the JSON payload, should use nanoFramework.Json
-                string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}, \"BatteryCharge\":{batteryCharge:F1}}}";
+                string payload ;
+
+                if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                {
+                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}�C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
+
+                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1)}, \"BatteryCharge\":{batteryCharge:F1}}}";
+                }
+                else
+                {
+                    Debug.WriteLine($" BatteryCharge {batteryCharge:F1}");
+
+                    payload = $"{{\"BatteryCharge\":{batteryCharge:F1}}}";
+                }
+
+#if SLEEP_SHT3C
+                shtc3.Sleep();
+#endif
 
                 // Configure the HttpClient uri, certificate, and authorization
                 string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
@@ -129,6 +136,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                 HttpResponseMessage response = httpClient.Post("", new StringContent(payload));
 
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Response code:{response.StatusCode}");
+
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)

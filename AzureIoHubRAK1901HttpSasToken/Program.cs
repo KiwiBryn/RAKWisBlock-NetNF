@@ -83,7 +83,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoHub.RAK1901.SasToken
                 {
                     Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
 
-                    string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius.ToString("F1")}}}";
+                    string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}}}";
 
                     try
                     {
