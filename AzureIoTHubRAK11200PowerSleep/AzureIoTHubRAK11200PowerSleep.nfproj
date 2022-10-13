@@ -55,7 +55,7 @@
       <HintPath>..\packages\nanoFramework.System.Device.I2c.1.0.3\lib\System.Device.I2c.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Wifi">
-      <HintPath>..\packages\nanoFramework.System.Device.Wifi.1.5.25\lib\System.Device.Wifi.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Device.Wifi.1.5.27\lib\System.Device.Wifi.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Stopwatch">
       <HintPath>..\packages\nanoFramework.System.Diagnostics.Stopwatch.1.2.82\lib\System.Diagnostics.Stopwatch.dll</HintPath>
@@ -67,10 +67,10 @@
       <HintPath>..\packages\nanoFramework.System.Math.1.4.4\lib\System.Math.dll</HintPath>
     </Reference>
     <Reference Include="System.Net">
-      <HintPath>..\packages\nanoFramework.System.Net.1.10.21\lib\System.Net.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Net.1.10.24\lib\System.Net.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
-      <HintPath>..\packages\nanoFramework.System.Net.Http.Client.1.5.27\lib\System.Net.Http.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Net.Http.Client.1.5.30\lib\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading">
       <HintPath>..\packages\nanoFramework.System.Threading.1.1.8\lib\System.Threading.dll</HintPath>
