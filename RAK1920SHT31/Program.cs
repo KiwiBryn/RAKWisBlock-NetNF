@@ -22,48 +22,48 @@
 //---------------------------------------------------------------------------------
 namespace devMobile.IoT.RAK.Wisblock.RAK1920.SHT31
 {
-   using System;
-   using System.Device.I2c;
-   using System.Diagnostics;
-   using System.Threading;
+    using System;
+    using System.Device.I2c;
+    using System.Diagnostics;
+    using System.Threading;
 
-   using Iot.Device.Sht3x;
-   using nanoFramework.Hardware.Esp32;
+    using Iot.Device.Sht3x;
+    using nanoFramework.Hardware.Esp32;
 
-   public class Program
-   {
-      public static void Main()
-      {
-         Debug.WriteLine("devMobile.IoT.RAK.Wisblock.SHT31 starting");
+    public class Program
+    {
+        public static void Main()
+        {
+            Debug.WriteLine("devMobile.IoT.RAK.Wisblock.RAK1920SHT31 starting");
 
-         try
-         {
-            Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
-            Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
-
-            I2cConnectionSettings settings = new(1, (byte)I2cAddress.AddrLow);
-
-            using (I2cDevice device = I2cDevice.Create(settings))
-            using (Sht3x sht31 = new(device))
+            try
             {
+                Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
+                Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
 
-               while (true)
-               {
-                  var temperature = sht31.Temperature;
-                  var relativeHumidity = sht31.Humidity;
+                I2cConnectionSettings settings = new(1, (byte)I2cAddress.AddrLow);
 
-                  Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
+                using (I2cDevice device = I2cDevice.Create(settings))
+                using (Sht3x sht31 = new(device))
+                {
 
-                  Thread.Sleep(10000);
-               }
+                    while (true)
+                    {
+                        var temperature = sht31.Temperature;
+                        var relativeHumidity = sht31.Humidity;
+
+                        Debug.WriteLine($"Temperature {temperature.DegreesCelsius:F1}°C  Humidity {relativeHumidity.Value:F0}%");
+
+                        Thread.Sleep(10000);
+                    }
+                }
             }
-         }
-         catch (Exception ex)
-         {
-            Debug.WriteLine($"SHT31 initialisation or read failed {ex.Message}");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SHT31 initialisation or read failed {ex.Message}");
 
-            Thread.Sleep(Timeout.Infinite);
-         }
-      }
-   }
+                Thread.Sleep(Timeout.Infinite);
+            }
+        }
+    }
 }
