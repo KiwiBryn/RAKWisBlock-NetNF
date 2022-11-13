@@ -96,6 +96,14 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
                 double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
 
+                /*
+                if (batteryCharge < 65)
+                {
+                    Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
+                    Sleep.StartDeepSleep();
+                }
+                */
+
                 // Configure the SHTC3 
                 I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
                 I2cDevice device = I2cDevice.Create(settings);
@@ -105,9 +113,9 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
                 if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
                 {
-                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}�C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
+                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
 
-                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1)}, \"BatteryCharge\":{batteryCharge:F1}}}";
+                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryCharge\":{batteryCharge:F1}}}";
                 }
                 else
                 {
