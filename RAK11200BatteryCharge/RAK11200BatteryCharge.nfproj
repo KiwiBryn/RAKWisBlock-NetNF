@@ -15,6 +15,7 @@
     <RootNamespace>RAK11200BatteryVoltage</RootNamespace>
     <AssemblyName>RAK11200BatteryVoltage</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <UserSecretsId>2e8195a4-e4c3-4a4c-b5ad-1cf64c023068</UserSecretsId>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
@@ -26,7 +27,7 @@
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.12.0\lib\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.Hardware.Esp32">
-      <HintPath>..\packages\nanoFramework.Hardware.Esp32.1.4.4\lib\nanoFramework.Hardware.Esp32.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Hardware.Esp32.1.4.8\lib\nanoFramework.Hardware.Esp32.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.Runtime.Events">
       <HintPath>..\packages\nanoFramework.Runtime.Events.1.11.1\lib\nanoFramework.Runtime.Events.dll</HintPath>
@@ -35,7 +36,7 @@
       <HintPath>..\packages\nanoFramework.System.Device.Adc.1.0.2\lib\System.Device.Adc.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Gpio">
-      <HintPath>..\packages\nanoFramework.System.Device.Gpio.1.1.18\lib\System.Device.Gpio.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Device.Gpio.1.1.22\lib\System.Device.Gpio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
