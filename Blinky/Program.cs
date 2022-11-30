@@ -44,7 +44,7 @@ namespace Blinky
             //GpioPin led = s_GpioController.OpenPin(PinNumber('B', 7), PinMode.Output);
 
             //STM32F769I_DISCO: PJ5 is LD2
-            //GpioPin led = s_GpioController.OpenPin(PinNumber('J', 5), PinMode.Output);
+            GpioPin led = s_GpioController.OpenPin(PinNumber('J', 5), PinMode.Output);
 
             // ST_B_L475E_IOT01A: PB14 is LD2
             //GpioPin led = s_GpioController.OpenPin(PinNumber('B', 14), PinMode.Output);
@@ -65,7 +65,7 @@ namespace Blinky
             //GpioPin led = s_GpioController.OpenPin(PinNumber('H', 14), PinMode.Output);
 
             // RAK11200 on RAK5005/RAK19007
-            GpioPin led = s_GpioController.OpenPin(Gpio.IO12, PinMode.Output); // LED1 Green
+            //GpioPin led = s_GpioController.OpenPin(Gpio.IO12, PinMode.Output); // LED1 Green
             //GpioPin led = s_GpioController.OpenPin(Gpio.IO02, PinMode.Output); // LED2 Blue
 
             // RAK11200 on RAK19001 needs battery connected or power switch in rechargeable position.
@@ -75,7 +75,7 @@ namespace Blinky
             // RAK2305 
             //GpioPin led = s_GpioController.OpenPin(Gpio.IO18, PinMode.Output); // LED Green (Test LED) on device
 
-            // RAK2305 On 5005 throws exceptions
+            // RAK2305 On RAK5005/RAK1900 throws exceptions
             //GpioPin led = s_GpioController.OpenPin(Gpio.IO34, PinMode.Output); // LED1 Green
             //GpioPin led = s_GpioController.OpenPin(Gpio.IO35, PinMode.Output); // LED2 Blue
 
