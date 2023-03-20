@@ -14,23 +14,24 @@
 // limitations under the License.
 //
 //
-namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK4631RAK2305Serial
+namespace devMobile.IoT.RAK.Wisblock.RAK4631RAK2305Serial
 {
-   using System;
-   using System.Diagnostics;
-   using System.IO.Ports;
-   using System.Threading;
-   using global::nanoFramework.Hardware.Esp32;
+    using System;
+    using System.Diagnostics;
+    using System.IO.Ports;
+    using System.Threading;
 
-   public class Program
-   {
+    using nanoFramework.Hardware.Esp32;
+
+    public class Program
+    {
       private static SerialPort _SerialPort;
 
       private const string SerialPortId = "COM2";
 
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN RAK4631 starting");
+         Debug.WriteLine("devMobile.IoT.RAK.Wisblock RAK4631 EVB starting");
 
          try
          {
