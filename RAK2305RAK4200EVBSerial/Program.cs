@@ -15,13 +15,14 @@
 //
 // RAK2305 nanoff --update --platform ESP32 --serialport COM4
 //
-namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
+namespace devMobile.IoT.RAK.Wisblock.RAK2305RAK3172Serial
 {
    using System;
    using System.Diagnostics;
    using System.IO.Ports;
    using System.Threading;
-   using global::nanoFramework.Hardware.Esp32;
+
+   using nanoFramework.Hardware.Esp32;
 
    public class Program
    {
@@ -31,7 +32,7 @@ namespace devMobile.IoT.LoRaWAN.nanoFramework.RAK2305
 
       public static void Main()
       {
-         Debug.WriteLine("devMobile.IoT.LoRaWAN.nanoFramework.RAK.LoraWAN RAK4200 EVB starting");
+         Debug.WriteLine("devMobile.IoT.RAK.Wisblock RAK4200 EVB starting");
 
          try
          {
