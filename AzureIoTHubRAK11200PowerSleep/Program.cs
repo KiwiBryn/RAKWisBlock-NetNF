@@ -92,12 +92,13 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
                 // Configure Analog input (AIN0) port then read the "battery charge"
                 AdcController adcController = new AdcController();
-                AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
+                AdcChannel batteryVoltageAdcChannel = adcController.OpenChannel(AdcControllerChannel);
 
-                double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
+                // https://forum.rakwireless.com/t/custom-li-ion-battery-voltage-calculation-in-rak4630/4401/7
+                double batteryVoltage = batteryVoltageAdcChannel.ReadValue() * (3.0 / 4096) * 1.9; // From blog post didn't work 1.73 checked with multimeter
 
                 /*
-                if (batteryCharge < 65)
+                if (batteryVoltage < ??)
                 {
                     Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
                     Sleep.StartDeepSleep();
@@ -113,15 +114,15 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
                 if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
                 {
-                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}");
+                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVoltage {batteryVoltage:F2}");
 
-                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryCharge\":{batteryCharge:F1}}}";
+                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryVoltage\":{batteryVoltage:F2}}}";
                 }
                 else
                 {
-                    Debug.WriteLine($" BatteryCharge {batteryCharge:F1}");
+                    Debug.WriteLine($" BatteryVoltage {batteryVoltage:F2}");
 
-                    payload = $"{{\"BatteryCharge\":{batteryCharge:F1}}}";
+                    payload = $"{{\"BatteryVoltage\":{batteryVoltage:F2}}}";
                 }
 
 #if SLEEP_SHT3C
