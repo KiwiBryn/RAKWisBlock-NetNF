@@ -87,7 +87,7 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerBaseline
             Shtc3 shtc3 = new(device);
 
             AdcController adcController = new AdcController();
-            AdcChannel batteryChargeAdcChannel = adcController.OpenChannel(AdcControllerChannel);
+            AdcChannel batteryVoltageAdcChannel = adcController.OpenChannel(AdcControllerChannel);
 
             string sasToken = "";
 
@@ -113,11 +113,12 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerBaseline
                     continue;
                 }
 
-                double batteryCharge = batteryChargeAdcChannel.ReadRatio() * 100.0;
+                // https://forum.rakwireless.com/t/custom-li-ion-battery-voltage-calculation-in-rak4630/4401/7
+                double batteryVoltage = batteryVoltageAdcChannel.ReadValue() * (3.0 / 4096) * 1.9; // From blog post didn't work 1.73 checked with multimeter
 
-                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryCharge {batteryCharge:F1}%");
+                Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVotage {batteryVoltage:F1}%");
 
-                string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryCharge\":{batteryCharge:F1}}}";
+                string payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryVoltage\":{batteryVoltage:F1}}}";
 
                 try
                 {
