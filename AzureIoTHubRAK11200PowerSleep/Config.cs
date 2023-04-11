@@ -23,18 +23,16 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
         public const string DeviceID = "...";
         public const string AzureIoTHubHostName = "...";
         public const string Key = "...";
-        public readonly static TimeSpan SasTokenRenewFor = new TimeSpan(24, 0, 0);
-        public readonly static TimeSpan SasTokenRenewEvery = new TimeSpan(0, 30, 0);
-        public readonly static TimeSpan FailureRetryInterval = new TimeSpan(0, 5, 0);
+
+        public const double BatteryVoltageBrownOutThreshold = 2.9; // This is a guess will need some experimentation
+
+        public readonly static TimeSpan SasTokenRenewFor = new TimeSpan(0, 30, 0);
+        public readonly static TimeSpan FailureRetryInterval = new TimeSpan(1, 0, 0);
         public readonly static TimeSpan TelemetryUploadInterval = new TimeSpan(0, 10, 0);
 
         public const string Ssid = "...";
         public const string Password = "...";
 
-        // DigiCert Trusted Root Authority from https://www.digicert.com/kb/digicert-root-certificates.htm#otherroots
-        //
-        // https://techcommunity.microsoft.com/t5/internet-of-things-blog/azure-iot-tls-critical-changes-are-almost-here-and-why-you/ba-p/2393169
-        //
         //  DigiCert Global G2 Root
         public const string DigiCertBaltimoreCyberTrustRoot =
   @"-----BEGIN CERTIFICATE-----

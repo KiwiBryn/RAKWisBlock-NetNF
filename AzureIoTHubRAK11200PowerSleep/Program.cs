@@ -33,10 +33,6 @@
 //
 //  SLEEP_SHT3C
 //
-// Need to check this if upload fails Q1 2023
-//
-// https://techcommunity.microsoft.com/t5/internet-of-things-blog/azure-iot-tls-critical-changes-are-almost-here-and-why-you/ba-p/2393169
-//
 //---------------------------------------------------------------------------------
 //#define SLEEP_LIGHT
 #define SLEEP_DEEP
@@ -73,8 +69,31 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
 
             try
             {
+                double batteryVoltage;
+
                 Configuration.SetPinFunction(Gpio.IO04, DeviceFunction.I2C1_DATA);
                 Configuration.SetPinFunction(Gpio.IO05, DeviceFunction.I2C1_CLOCK);
+
+                Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Battery voltage measurement");
+
+                // Configure Analog input (AIN0) port then read the "battery charge"
+                AdcController adcController = new AdcController();
+
+                using (AdcChannel batteryVoltageAdcChannel = adcController.OpenChannel(AdcControllerChannel))
+                {
+
+                    // https://forum.rakwireless.com/t/custom-li-ion-battery-voltage-calculation-in-rak4630/4401/7
+                    // When I checked with multimeter I had to increase 1.72 to 1.9
+                    batteryVoltage = batteryVoltageAdcChannel.ReadValue() * (3.0 / 4096) * 1.9;
+
+                    Debug.WriteLine($" BatteryVoltage {batteryVoltage:F2}");
+
+                    if (batteryVoltage < Config.BatteryVoltageBrownOutThreshold)
+                    {
+                        Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
+                        Sleep.StartDeepSleep();
+                    }
+                }
 
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connecting");
 
@@ -90,44 +109,31 @@ namespace devMobile.IoT.RAK.Wisblock.AzureIoTHub.RAK11200.PowerSleep
                 }
                 Debug.WriteLine($"{DateTime.UtcNow:HH:mm:ss} Wifi connected");
 
-                // Configure Analog input (AIN0) port then read the "battery charge"
-                AdcController adcController = new AdcController();
-                AdcChannel batteryVoltageAdcChannel = adcController.OpenChannel(AdcControllerChannel);
-
-                // https://forum.rakwireless.com/t/custom-li-ion-battery-voltage-calculation-in-rak4630/4401/7
-                double batteryVoltage = batteryVoltageAdcChannel.ReadValue() * (3.0 / 4096) * 1.9; // From blog post didn't work 1.73 checked with multimeter
-
-                /*
-                if (batteryVoltage < ??)
-                {
-                    Sleep.EnableWakeupByTimer(Config.FailureRetryInterval);
-                    Sleep.StartDeepSleep();
-                }
-                */
-
                 // Configure the SHTC3 
                 I2cConnectionSettings settings = new(I2cDeviceBusID, Shtc3.DefaultI2cAddress);
-                I2cDevice device = I2cDevice.Create(settings);
-                Shtc3 shtc3 = new(device);
 
                 string payload ;
 
-                if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                using (I2cDevice device = I2cDevice.Create(settings))
+                using (Shtc3 shtc3 = new(device))
                 {
-                    Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVoltage {batteryVoltage:F2}");
+                    if (shtc3.TryGetTemperatureAndHumidity(out var temperature, out var relativeHumidity))
+                    {
+                        Debug.WriteLine($" Temperature {temperature.DegreesCelsius:F1}°C Humidity {relativeHumidity.Value:F0}% BatteryVoltage {batteryVoltage:F2}");
 
-                    payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryVoltage\":{batteryVoltage:F2}}}";
-                }
-                else
-                {
-                    Debug.WriteLine($" BatteryVoltage {batteryVoltage:F2}");
+                        payload = $"{{\"RelativeHumidity\":{relativeHumidity.Value:F0},\"Temperature\":{temperature.DegreesCelsius:F1}, \"BatteryVoltage\":{batteryVoltage:F2}}}";
+                    }
+                    else
+                    {
+                        Debug.WriteLine($" BatteryVoltage {batteryVoltage:F2}");
 
-                    payload = $"{{\"BatteryVoltage\":{batteryVoltage:F2}}}";
-                }
+                        payload = $"{{\"BatteryVoltage\":{batteryVoltage:F2}}}";
+                    }
 
 #if SLEEP_SHT3C
-                shtc3.Sleep();
+                    shtc3.Sleep();
 #endif
+                }
 
                 // Configure the HttpClient uri, certificate, and authorization
                 string uri = $"{Config.AzureIoTHubHostName}.azure-devices.net/devices/{Config.DeviceID}";
